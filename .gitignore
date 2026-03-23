@@ -1,7 +1,15 @@
-node_modules/
-dist/
-build/
-target/
+# frontend
+portfolio-frontend/node_modules/
+portfolio-frontend/dist/
+
+# backend
+Portifolio-backend/target/
+
+# editor
 .vscode/
+
+# env
 .env
+
+# logs
 *.log
