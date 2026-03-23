@@ -1,6 +1,4 @@
-![Java](https://img.shields.io/badge/Java-21-blue)
-![Spring Boot](https://img.shields.io/badge/SpringBoot-3-green)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-DB-blue)
+
 # 🚀 Portfolio CMS API
 
 💡 Plataforma fullstack para gestionar y mostrar proyectos profesionales desde un panel moderno.
