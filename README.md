@@ -1,43 +1,9 @@
 🚀 Portfolio CMS
 <div align="center">
 
+💡 Administra y muestra tu portafolio profesional en un solo lugar
 
-
-
-
-
-
-
-
-
-💡 Gestiona y muestra tu portafolio profesional desde un panel moderno.
-
-</div>
-✨ ¿Qué es esto?
-
-Sistema fullstack que permite:
-
-🧑‍💻 Administrar proyectos
-✏️ Editar contenido fácilmente
-🔐 Acceder con autenticación segura
-🎨 Visualizar todo en una interfaz moderna
-
-🧩 Tecnologías
-<div align="center">
-⚙️ Backend
-
-
-
-
-
-
-
-
-
-
-🎨 Frontend
-
-
+<br>
 
 
 
@@ -47,32 +13,41 @@ Sistema fullstack que permite:
 
 
 </div>
+✨ Overview
+
+Aplicación fullstack que permite:
+
+🧑‍💻 Gestionar proyectos desde un panel admin
+🔐 Autenticación segura con roles
+🎨 Visualización moderna del portafolio
+⚡ Comunicación en tiempo real con API
+🧩 Stack
+Backend
+Java + Spring Boot
+JWT + Security
+PostgreSQL
+Frontend
+React + TypeScript
+Tailwind CSS
+Axios
 🏗️ Arquitectura
-Frontend (React)
-      ↓
-API REST (Spring Boot)
-      ↓
-Base de datos (PostgreSQL)
-🚀 Ejecutar
-# Backend
+Frontend → Backend → Database
+🚀 Run
+# backend
 cd Portifolio-backend
 ./mvnw spring-boot:run
 
-# Frontend
+# frontend
 cd portfolio-frontend
 npm install
 npm run dev
-🌟 Funcionalidades
+🎯 Objetivo
 
-✔ CRUD de proyectos
-✔ Autenticación con JWT
-✔ Roles (ADMIN / USER)
-✔ Panel admin en dark mode
-✔ Preview visual de proyectos
+Construir un portfolio autogestionable, enfocado en:
 
+simplicidad
+diseño moderno
+arquitectura limpia
 👨‍💻 Autor
-<div align="center">
 
-Mariano Galeano 🚀
-
-</div>
+Mariano Galeano
