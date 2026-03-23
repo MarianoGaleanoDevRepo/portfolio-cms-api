@@ -24,8 +24,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
         String path = request.getRequestURI();
+        String method = request.getMethod();
 
-        if (path.equals("/api/auth/login") || (path.equals("/api/users") && request.getMethod().equals("POST"))) {
+        // rutas públicas
+        if (path.equals("/api/auth/login")
+                || (path.equals("/api/users") && method.equals("POST"))
+                || path.startsWith("/swagger-ui")
+                || path.startsWith("/v3/api-docs")
+                || path.equals("/swagger-ui.html")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -51,25 +57,22 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             """);
             return;
         }
+
         String role = jwtUtil.extractRole(token);
-        String method = request.getMethod();
-String pathRequest = request.getRequestURI();
 
-// proteger solo modificaciones
-if (pathRequest.startsWith("/api/projects")) {
-
-    if (method.equals("POST") || method.equals("PUT") || method.equals("DELETE")) {
-
-        if (!role.equals("ADMIN")) {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            response.setContentType("application/json");
-            response.getWriter().write("""
-                {"status":403,"message":"Acceso denegado - requiere rol ADMIN"}
-            """);
-            return;
+        // control por roles en proyectos
+        if (path.startsWith("/api/projects")) {
+            if (method.equals("POST") || method.equals("PUT") || method.equals("DELETE")) {
+                if (!role.equals("ADMIN")) {
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.setContentType("application/json");
+                    response.getWriter().write("""
+                        {"status":403,"message":"Acceso denegado - requiere rol ADMIN"}
+                    """);
+                    return;
+                }
+            }
         }
-    }
-}
 
         filterChain.doFilter(request, response);
     }
