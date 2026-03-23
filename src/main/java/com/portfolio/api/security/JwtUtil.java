@@ -26,4 +26,43 @@ public class JwtUtil {
                 .signWith(key)
                 .compact();
     }
+
+
+    public String extractEmail(String token) {
+    SecretKey key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
+
+    return Jwts.parser()
+            .verifyWith(key)
+            .build()
+            .parseSignedClaims(token)
+            .getPayload()
+            .getSubject();
+}
+
+public boolean isTokenValid(String token) {
+    try {
+        SecretKey key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
+
+        Jwts.parser()
+                .verifyWith(key)
+                .build()
+                .parseSignedClaims(token);
+
+        return true;
+    } catch (Exception e) {
+        return false;
+    }
+    
+    }
+
+public String extractRole(String token) {
+    SecretKey key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
+
+    return Jwts.parser()
+            .verifyWith(key)
+            .build()
+            .parseSignedClaims(token)
+            .getPayload()
+            .get("role", String.class);
+}
 }
