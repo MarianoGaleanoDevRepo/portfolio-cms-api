@@ -10,6 +10,7 @@ type ProjectCardProps = {
   featured?: boolean;
   onDelete?: (id: number) => void;
   onEdit?: (id: number) => void;
+  adminMode?: boolean;
 };
 
 function ProjectCard({
@@ -22,6 +23,7 @@ function ProjectCard({
   featured,
   onDelete,
   onEdit,
+  adminMode = false,
 }: ProjectCardProps) {
   const navigate = useNavigate();
 
@@ -87,19 +89,23 @@ function ProjectCard({
           </a>
         )}
 
-        <button
-          onClick={() => onEdit?.(id)}
-          className="rounded-xl border border-amber-400/20 bg-amber-500/10 px-4 py-2 text-sm font-medium text-amber-300 transition hover:bg-amber-500/20"
-        >
-          Editar
-        </button>
+        {adminMode && (
+          <>
+            <button
+              onClick={() => onEdit?.(id)}
+              className="rounded-xl border border-amber-400/20 bg-amber-500/10 px-4 py-2 text-sm font-medium text-amber-300 transition hover:bg-amber-500/20"
+            >
+              Editar
+            </button>
 
-        <button
-          onClick={() => onDelete?.(id)}
-          className="rounded-xl border border-red-400/20 bg-red-500/10 px-4 py-2 text-sm font-medium text-red-300 transition hover:bg-red-500/20"
-        >
-          Eliminar
-        </button>
+            <button
+              onClick={() => onDelete?.(id)}
+              className="rounded-xl border border-red-400/20 bg-red-500/10 px-4 py-2 text-sm font-medium text-red-300 transition hover:bg-red-500/20"
+            >
+              Eliminar
+            </button>
+          </>
+        )}
       </div>
     </div>
   );
