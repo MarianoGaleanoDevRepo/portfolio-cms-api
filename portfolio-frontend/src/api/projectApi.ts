@@ -9,6 +9,7 @@ export type ProjectRequest = {
   imageUrl: string;
   featured: boolean;
   published: boolean;
+  categoryId: number | null;
 };
 
 export type Project = {
@@ -21,6 +22,11 @@ export type Project = {
   imageUrl?: string;
   featured?: boolean;
   published?: boolean;
+  views?: number;
+  categoryId?: number | null;
+  categoryName?: string | null;
+  videoUrl?: string;
+gallery?: string;
 };
 
 export const getProjects = async () => {

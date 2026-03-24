@@ -11,6 +11,7 @@ type ProjectCardProps = {
   onDelete?: (id: number) => void;
   onEdit?: (id: number) => void;
   adminMode?: boolean;
+  categoryName?: string | null;
 };
 
 function ProjectCard({
@@ -23,6 +24,7 @@ function ProjectCard({
   featured,
   onDelete,
   onEdit,
+  categoryName,
   adminMode = false,
 }: ProjectCardProps) {
   const navigate = useNavigate();
@@ -59,6 +61,12 @@ function ProjectCard({
           <h3 className="text-2xl font-semibold tracking-tight text-white">
             {title}
           </h3>
+
+          {categoryName && (
+            <p className="mt-2 text-xs uppercase tracking-[0.2em] text-violet-400">
+              {categoryName}
+            </p>
+          )}
 
           <p className="mt-3 line-clamp-3 text-sm leading-6 text-zinc-400">
             {shortDescription}

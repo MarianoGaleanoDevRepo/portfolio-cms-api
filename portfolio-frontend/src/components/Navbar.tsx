@@ -12,7 +12,12 @@ function Navbar() {
     localStorage.removeItem("email");
     navigate("/");
   };
-
+<Link
+  to="/admin/profile"
+  className="rounded-xl px-4 py-2 text-sm text-zinc-300 transition hover:bg-white/5 hover:text-white"
+>
+  Perfil
+</Link>
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-black/40 backdrop-blur-xl">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../api/axios";
+import PublicNavbar from "../components/PublicNavbar";
 
 type Project = {
   id: number;
@@ -12,6 +13,10 @@ type Project = {
   imageUrl?: string;
   featured?: boolean;
   published?: boolean;
+  views?: number;
+  videoUrl?: string;
+  gallery?: string;
+  categoryName?: string | null;
 };
 
 function ProjectDetailPage() {
@@ -22,6 +27,7 @@ function ProjectDetailPage() {
   useEffect(() => {
     const fetchProject = async () => {
       try {
+        await api.post(`/projects/${id}/view`);
         const response = await api.get(`/projects/${id}`);
         setProject(response.data);
       } catch (error) {
@@ -29,22 +35,44 @@ function ProjectDetailPage() {
       }
     };
 
-    fetchProject();
+    if (id) {
+      fetchProject();
+    }
   }, [id]);
 
   if (!project) {
     return (
-      <div className="min-h-screen bg-zinc-950 p-10 text-white">
-        Cargando proyecto...
+      <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(124,58,237,0.16),transparent_28%),radial-gradient(circle_at_top_right,rgba(99,102,241,0.14),transparent_24%),linear-gradient(to_bottom_right,#09090b,#111827,#000000)] text-white">
+        <PublicNavbar />
+        <div className="mx-auto max-w-5xl px-6 py-10">
+          <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-8 backdrop-blur-xl">
+            Cargando proyecto...
+          </div>
+        </div>
       </div>
     );
   }
 
+  const galleryImages = project.gallery
+    ? project.gallery
+        .split(",")
+        .map((img) => img.trim())
+        .filter(Boolean)
+    : [];
+
+  const embedVideoUrl = project.videoUrl
+    ? project.videoUrl.includes("watch?v=")
+      ? project.videoUrl.replace("watch?v=", "embed/")
+      : project.videoUrl
+    : "";
+
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(124,58,237,0.16),transparent_28%),radial-gradient(circle_at_top_right,rgba(99,102,241,0.14),transparent_24%),linear-gradient(to_bottom_right,#09090b,#111827,#000000)] px-6 py-10 text-white">
-      <div className="mx-auto max-w-5xl">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(124,58,237,0.16),transparent_28%),radial-gradient(circle_at_top_right,rgba(99,102,241,0.14),transparent_24%),linear-gradient(to_bottom_right,#09090b,#111827,#000000)] text-white">
+      <PublicNavbar />
+
+      <main className="mx-auto max-w-5xl px-6 py-10">
         <button
-          onClick={() => navigate("/projects")}
+          onClick={() => navigate("/")}
           className="mb-8 rounded-xl border border-white/10 px-4 py-2 text-sm text-zinc-300 transition hover:border-violet-500 hover:text-white"
         >
           ← Volver
@@ -73,18 +101,20 @@ function ProjectDetailPage() {
                 </span>
               )}
 
-              {project.published ? (
-                <span className="rounded-full border border-emerald-400/20 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-300">
-                  Publicado
-                </span>
-              ) : (
-                <span className="rounded-full border border-zinc-600/30 bg-zinc-800 px-3 py-1 text-xs font-semibold text-zinc-300">
-                  Borrador
+              {project.categoryName && (
+                <span className="rounded-full border border-fuchsia-400/20 bg-fuchsia-500/10 px-3 py-1 text-xs font-semibold text-fuchsia-300">
+                  {project.categoryName}
                 </span>
               )}
+
+              <span className="rounded-full border border-cyan-400/20 bg-cyan-500/10 px-3 py-1 text-xs font-semibold text-cyan-300">
+                👁 {project.views ?? 0} visitas
+              </span>
             </div>
 
-            <h1 className="text-4xl font-bold tracking-tight">{project.title}</h1>
+            <h1 className="text-4xl font-bold tracking-tight">
+              {project.title}
+            </h1>
 
             <p className="mt-4 text-lg text-zinc-400">
               {project.shortDescription}
@@ -96,6 +126,34 @@ function ProjectDetailPage() {
                 {project.description || "Sin descripción adicional."}
               </p>
             </div>
+
+            {embedVideoUrl && (
+              <div className="mt-10">
+                <h2 className="mb-4 text-xl font-semibold">Video</h2>
+                <iframe
+                  className="h-[400px] w-full rounded-2xl border border-white/10"
+                  src={embedVideoUrl}
+                  title="Video del proyecto"
+                  allowFullScreen
+                />
+              </div>
+            )}
+
+            {galleryImages.length > 0 && (
+              <div className="mt-10">
+                <h2 className="mb-4 text-xl font-semibold">Galería</h2>
+                <div className="grid gap-4 md:grid-cols-2">
+                  {galleryImages.map((img, i) => (
+                    <img
+                      key={i}
+                      src={img}
+                      alt={`Galería ${i + 1}`}
+                      className="rounded-2xl border border-white/10 object-cover"
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="mt-8 flex flex-wrap gap-3">
               {project.githubUrl && (
@@ -122,7 +180,7 @@ function ProjectDetailPage() {
             </div>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

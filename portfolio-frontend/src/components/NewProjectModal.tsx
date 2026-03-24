@@ -3,11 +3,8 @@ import Button from "./ui/Button";
 import Card from "./ui/Card";
 import Input from "./ui/Input";
 import Textarea from "./ui/Textarea";
-import {
-  createProject,
-  type Project,
-  updateProject,
-} from "../api/projectApi";
+import { getCategories, type Category } from "../api/categoryApi";
+import { createProject, type Project, updateProject } from "../api/projectApi";
 
 type NewProjectModalProps = {
   open: boolean;
@@ -22,12 +19,18 @@ function NewProjectModal({
   onCreated,
   projectToEdit,
 }: NewProjectModalProps) {
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [categoryId, setCategoryId] = useState<number | null>(null);
+
   const [title, setTitle] = useState("");
   const [shortDescription, setShortDescription] = useState("");
   const [description, setDescription] = useState("");
   const [githubUrl, setGithubUrl] = useState("");
   const [demoUrl, setDemoUrl] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+  const [videoUrl, setVideoUrl] = useState("");
+  const [gallery, setGallery] = useState("");
+
   const [featured, setFeatured] = useState(false);
   const [published, setPublished] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -42,10 +45,26 @@ function NewProjectModal({
     setGithubUrl("");
     setDemoUrl("");
     setImageUrl("");
+    setVideoUrl("");
+    setGallery("");
     setFeatured(false);
     setPublished(true);
     setImageError(false);
+    setCategoryId(null);
   };
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await getCategories();
+        setCategories(data);
+      } catch (error) {
+        console.error("Error cargando categorías:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     if (projectToEdit) {
@@ -55,8 +74,11 @@ function NewProjectModal({
       setGithubUrl(projectToEdit.githubUrl || "");
       setDemoUrl(projectToEdit.demoUrl || "");
       setImageUrl(projectToEdit.imageUrl || "");
+      setVideoUrl(projectToEdit.videoUrl || "");
+      setGallery(projectToEdit.gallery || "");
       setFeatured(!!projectToEdit.featured);
       setPublished(projectToEdit.published ?? true);
+      setCategoryId(projectToEdit.categoryId ?? null);
       setImageError(false);
     } else {
       resetForm();
@@ -64,8 +86,6 @@ function NewProjectModal({
   }, [projectToEdit, open]);
 
   if (!open) return null;
-
-  
 
   const handleSubmit = async () => {
     try {
@@ -78,8 +98,11 @@ function NewProjectModal({
         githubUrl,
         demoUrl,
         imageUrl,
+        videoUrl,
+        gallery,
         featured,
         published,
+        categoryId,
       };
 
       if (isEditMode && projectToEdit) {
@@ -105,7 +128,7 @@ function NewProjectModal({
 
   return (
     <div className="fixed inset-0 z-50 grid place-items-center bg-black/70 p-4 backdrop-blur-md">
-      <div className="w-full max-w-4xl">
+      <div className="w-full max-w-5xl">
         <Card className="border border-white/10 bg-white/5 backdrop-blur-xl">
           <div className="mb-6 flex items-start justify-between gap-4">
             <div>
@@ -158,6 +181,26 @@ function NewProjectModal({
               </div>
 
               <div className="mt-4">
+                <label className="mb-2 block text-sm text-zinc-400">
+                  Categoría
+                </label>
+                <select
+                  value={categoryId ?? ""}
+                  onChange={(e) =>
+                    setCategoryId(e.target.value ? Number(e.target.value) : null)
+                  }
+                  className="w-full rounded-2xl border border-zinc-800 bg-zinc-900 px-4 py-3 text-white outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
+                >
+                  <option value="">Sin categoría</option>
+                  {categories.map((category) => (
+                    <option key={category.id} value={category.id}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="mt-4">
                 <Textarea
                   placeholder="Descripción completa"
                   value={description}
@@ -176,6 +219,20 @@ function NewProjectModal({
                   placeholder="Demo URL"
                   value={demoUrl}
                   onChange={(e) => setDemoUrl(e.target.value)}
+                />
+              </div>
+
+              <div className="mt-4 grid gap-4 md:grid-cols-2">
+                <Input
+                  placeholder="YouTube URL"
+                  value={videoUrl}
+                  onChange={(e) => setVideoUrl(e.target.value)}
+                />
+
+                <Input
+                  placeholder="Galería (separar por coma)"
+                  value={gallery}
+                  onChange={(e) => setGallery(e.target.value)}
                 />
               </div>
 
@@ -252,11 +309,18 @@ function NewProjectModal({
                   <h4 className="truncate text-lg font-semibold text-white">
                     {title || "Título del proyecto"}
                   </h4>
+
+                  {categoryId && (
+                    <p className="mt-2 text-xs uppercase tracking-[0.2em] text-violet-400">
+                      {categories.find((c) => c.id === categoryId)?.name}
+                    </p>
+                  )}
+
                   <p className="mt-2 line-clamp-3 text-sm text-zinc-400">
                     {shortDescription || "La descripción corta aparecerá aquí."}
                   </p>
 
-                  <div className="mt-4 flex gap-2">
+                  <div className="mt-4 flex flex-wrap gap-2">
                     {featured && (
                       <span className="rounded-full border border-violet-400/20 bg-violet-500/10 px-3 py-1 text-xs font-semibold text-violet-300">
                         ★ Destacado
@@ -270,6 +334,18 @@ function NewProjectModal({
                     ) : (
                       <span className="rounded-full border border-zinc-600/30 bg-zinc-800 px-3 py-1 text-xs font-semibold text-zinc-300">
                         Borrador
+                      </span>
+                    )}
+
+                    {videoUrl && (
+                      <span className="rounded-full border border-cyan-400/20 bg-cyan-500/10 px-3 py-1 text-xs font-semibold text-cyan-300">
+                        🎥 Video
+                      </span>
+                    )}
+
+                    {gallery && (
+                      <span className="rounded-full border border-pink-400/20 bg-pink-500/10 px-3 py-1 text-xs font-semibold text-pink-300">
+                        🖼️ Galería
                       </span>
                     )}
                   </div>
